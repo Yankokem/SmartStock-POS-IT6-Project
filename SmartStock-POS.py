@@ -1,14 +1,13 @@
 # main.py
 import customtkinter as ctk
 from tkinter import messagebox, TclError
-from tkinter.ttk import Treeview
 import mysql.connector
 from mysql.connector import Error
-import cart  # Import the cart module
+import cart
 
-# Initialize global grand_total
+# Initialize global variables
 grand_total = 0.0
-cart_items = []  # Shared cart list
+cart_items = []
 
 try:
     print("Attempting to connect to database...")
@@ -25,7 +24,7 @@ try:
     root.title("Product Inventory")
     root.state('zoomed')
 
-    # Vertical Navbar Frame
+    # Vertical Navbar Frame (always visible)
     navbar_frame = ctk.CTkFrame(master=root, width=200, corner_radius=0)
     navbar_frame.pack(side=ctk.LEFT, fill=ctk.Y, padx=0, pady=0)
 
@@ -56,60 +55,75 @@ try:
     chasis_btn = ctk.CTkButton(master=navbar_frame, text="Chassis", command=lambda: filter_products(7))
     chasis_btn.pack(pady=5, padx=10, fill=ctk.X)
 
-    # Main content frame
+    # Main content frame (now for product items)
     main_frame = ctk.CTkFrame(master=root)
     main_frame.pack(side=ctk.LEFT, fill=ctk.BOTH, expand=True, padx=10, pady=10)
 
-    products_frame = ctk.CTkFrame(master=main_frame)
-    products_frame.pack(side=ctk.TOP, fill=ctk.X, pady=(0, 5))
+    product_display_frame = ctk.CTkScrollableFrame(master=main_frame, width=550)  # Moved from right to middle
+    product_display_frame.pack(fill=ctk.BOTH, expand=True, padx=0, pady=0)
 
-    products_tree = Treeview(products_frame, columns=("Product", "Price"), show="headings", height=10)
-    products_tree.heading("Product", text="Product Name")
-    products_tree.heading("Price", text="Price")
-    products_tree.column("Product", width=400)
-    products_tree.column("Price", width=100)
-    products_tree.pack(fill=ctk.X)
+    # Right-side frame for entries and buttons
+    right_frame = ctk.CTkFrame(master=root, width=300)
+    right_frame.pack(side=ctk.RIGHT, fill=ctk.Y, padx=10, pady=10)
 
-    entry_frame = ctk.CTkFrame(master=main_frame)
+    entry_frame = ctk.CTkFrame(master=right_frame)
     entry_frame.pack(side=ctk.TOP, fill=ctk.X, pady=5)
 
-    ctk.CTkLabel(master=entry_frame, text="Name:").pack(side=ctk.LEFT, padx=(0, 2))
+    ctk.CTkLabel(master=entry_frame, text="Name:").pack(side=ctk.TOP, padx=(0, 2), pady=2)
     name_entry = ctk.CTkEntry(master=entry_frame, width=200, state='disabled')
-    name_entry.pack(side=ctk.LEFT, padx=5)
+    name_entry.pack(side=ctk.TOP, padx=5, pady=2)
 
-    ctk.CTkLabel(master=entry_frame, text="Price:").pack(side=ctk.LEFT, padx=(0, 2))
-    price_entry = ctk.CTkEntry(master=entry_frame, width=80)
-    price_entry.pack(side=ctk.LEFT, padx=5)
+    ctk.CTkLabel(master=entry_frame, text="Price:").pack(side=ctk.TOP, padx=(0, 2), pady=2)
+    price_entry = ctk.CTkEntry(master=entry_frame, width=200)
+    price_entry.pack(side=ctk.TOP, padx=5, pady=2)
 
-    ctk.CTkLabel(master=entry_frame, text="Quantity:").pack(side=ctk.LEFT, padx=(0, 2))
-    qty_entry = ctk.CTkEntry(master=entry_frame, width=50)
-    qty_entry.pack(side=ctk.LEFT, padx=5)
+    ctk.CTkLabel(master=entry_frame, text="Quantity:").pack(side=ctk.TOP, padx=(0, 2), pady=2)
+    qty_entry = ctk.CTkEntry(master=entry_frame, width=200)
+    qty_entry.pack(side=ctk.TOP, padx=5, pady=2)
 
-    ctk.CTkLabel(master=entry_frame, text="Total:").pack(side=ctk.LEFT, padx=(0, 2))
-    total_entry = ctk.CTkEntry(master=entry_frame, width=80, state='disabled')
-    total_entry.pack(side=ctk.LEFT, padx=5)
+    ctk.CTkLabel(master=entry_frame, text="Total:").pack(side=ctk.TOP, padx=(0, 2), pady=2)
+    total_entry = ctk.CTkEntry(master=entry_frame, width=200, state='disabled')
+    total_entry.pack(side=ctk.TOP, padx=5, pady=2)
 
-    button_frame = ctk.CTkFrame(master=main_frame)
+    button_frame = ctk.CTkFrame(master=right_frame)
     button_frame.pack(side=ctk.TOP, pady=10)
 
+
+    def toggle_cart():
+        global cart_visible
+        if not cart_visible:
+            main_frame.pack_forget()
+            right_frame.pack_forget()
+            cart_frame.pack(side=ctk.LEFT, fill=ctk.BOTH, expand=True, padx=10, pady=10)
+            cart.update_cart_display(cart_frame, cart_items, grand_total)
+            cart_visible = True
+            cart_btn.configure(text="Hide Cart")
+        else:
+            cart_frame.pack_forget()
+            main_frame.pack(side=ctk.LEFT, fill=ctk.BOTH, expand=True, padx=10, pady=10)
+            right_frame.pack(side=ctk.RIGHT, fill=ctk.Y, padx=10, pady=10)
+            cart_visible = False
+            cart_btn.configure(text="View Cart")
+
+
     refresh_btn = ctk.CTkButton(master=button_frame, text="Refresh Products",
-                                command=lambda: [populate_products_tree(), populate_product_display(),
-                                                 clear_selections()])
-    refresh_btn.pack(side=ctk.LEFT, padx=5)
+                                command=lambda: [populate_product_display(), clear_selections()])
+    refresh_btn.pack(side=ctk.TOP, padx=5, pady=5)
 
     add_btn = ctk.CTkButton(master=button_frame, text="Add to Cart",
                             command=lambda: [add_to_cart(), clear_selections()])
-    add_btn.pack(side=ctk.LEFT, padx=5)
+    add_btn.pack(side=ctk.TOP, padx=5, pady=5)
 
-    cart_btn = ctk.CTkButton(master=button_frame, text="View Cart",
-                             command=lambda: cart.show_cart(root, cart_items, grand_total))
-    cart_btn.pack(side=ctk.LEFT, padx=5)
+    cart_btn = ctk.CTkButton(master=button_frame, text="View Cart", command=toggle_cart)
+    cart_btn.pack(side=ctk.TOP, padx=5, pady=5)
 
-    # Right-side Product Display Frame
-    product_display_frame = ctk.CTkScrollableFrame(master=root, width=300)
-    product_display_frame.pack(side=ctk.RIGHT, fill=ctk.Y, padx=10, pady=10)
+    # Cart Frame (hidden initially, initialized once)
+    cart_frame = ctk.CTkFrame(master=root)
+    cart_frame.pack_forget()
+    cart.initialize_cart(cart_frame, cart_items, grand_total, lambda: toggle_cart())
 
     selected_item_button = None
+    cart_visible = False
 
 
     def populate_product_display(category_id=None):
@@ -171,38 +185,15 @@ try:
 
 
     def clear_selections():
-        products_tree.selection_remove(products_tree.selection())
         global selected_item_button
         if selected_item_button:
             selected_item_button.configure(fg_color="gray20")
             selected_item_button = None
 
 
-    def populate_products_tree(category_id=None):
-        try:
-            print("Executing query to fetch products for Treeview...")
-            products_tree.delete(*products_tree.get_children())
-            if category_id is None:
-                query = "SELECT Name, Price FROM products"
-                cursor.execute(query)
-            else:
-                query = "SELECT Name, Price FROM products WHERE CategoryID = %s"
-                cursor.execute(query, (category_id,))
-            rows = cursor.fetchall()
-            print(f"Fetched {len(rows)} products for Treeview (CategoryID: {category_id if category_id else 'All'})")
-            if not rows:
-                messagebox.showinfo("Info", "No products found in the database")
-            for row in rows:
-                products_tree.insert("", "end", values=(row[0], row[1]))
-        except mysql.connector.Error as err:
-            messagebox.showerror("Database Error", f"Query failed: {err}")
-            print(f"Query error: {err}")
-
-
     def filter_products(category_id):
         try:
             print(f"Filtering products by CategoryID: {category_id if category_id else 'All'}")
-            populate_products_tree(category_id)
             populate_product_display(category_id)
         except mysql.connector.Error as err:
             messagebox.showerror("Database Error", f"Query failed: {err}")
@@ -228,7 +219,8 @@ try:
             grand_total += total
             cart_items.append((product, price, quantity, total))
             print(f"Added to cart: {product}, Total: {total:.2f}, Grand Total: {grand_total:.2f}")
-            cart.update_cart_display(cart_items, grand_total)  # Update cart display
+            if cart_visible:
+                cart.update_cart_display(cart_frame, cart_items, grand_total)
             name_entry.configure(state='normal')
             name_entry.delete(0, ctk.END)
             name_entry.configure(state='disabled')
@@ -239,26 +231,6 @@ try:
             total_entry.configure(state='disabled')
         except ValueError:
             messagebox.showwarning("Invalid Input", "Please enter valid numbers for price and quantity")
-
-
-    def update_product_entries(event):
-        selected = products_tree.selection()
-        if selected:
-            item = products_tree.item(selected[0])
-            product = item['values'][0]
-            price = item['values'][1]
-            name_entry.configure(state='normal')
-            name_entry.delete(0, ctk.END)
-            name_entry.insert(0, product)
-            name_entry.configure(state='disabled')
-            price_entry.delete(0, ctk.END)
-            price_entry.insert(0, price)
-            qty_entry.delete(0, ctk.END)
-            qty_entry.insert(0, "1")
-            total_entry.configure(state='normal')
-            total_entry.delete(0, ctk.END)
-            total_entry.insert(0, price)
-            total_entry.configure(state='disabled')
 
 
     def update_total(*args):
@@ -274,12 +246,10 @@ try:
             pass
 
 
-    products_tree.bind("<<TreeviewSelect>>", update_product_entries)
     qty_entry.bind("<KeyRelease>", update_total)
     price_entry.bind("<KeyRelease>", update_total)
 
-    # Populate both Treeview and product display on startup
-    populate_products_tree()
+    # Populate product display on startup
     populate_product_display()
 
     root.mainloop()

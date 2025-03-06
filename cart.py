@@ -1,53 +1,43 @@
 # cart.py
 import customtkinter as ctk
-from tkinter import messagebox, Toplevel
+from tkinter import messagebox
 
-# Shared variables from main.py
-cart_items = []
-grand_total = 0.0
-cart_window = None
-
-def show_cart(parent, items, total):
-    global cart_window, cart_items, grand_total
+def initialize_cart(cart_frame, items, total, toggle_callback):
+    global cart_items, grand_total
     cart_items = items
     grand_total = total
 
-    if cart_window is None or not cart_window.winfo_exists():
-        cart_window = Toplevel(parent)
-        cart_window.title("Cart")
-        cart_window.geometry("600x600")
+    cart_content = ctk.CTkScrollableFrame(master=cart_frame, width=550)
+    cart_content.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
 
-        cart_frame = ctk.CTkScrollableFrame(master=cart_window, width=550)
-        cart_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
+    grand_total_frame = ctk.CTkFrame(master=cart_frame)
+    grand_total_frame.pack(fill=ctk.X, padx=10, pady=5)
 
-        grand_total_frame = ctk.CTkFrame(master=cart_window)
-        grand_total_frame.pack(fill=ctk.X, padx=10, pady=5)
+    grand_total_label = ctk.CTkLabel(master=grand_total_frame, text="Grand Total:")
+    grand_total_label.pack(side=ctk.LEFT, padx=(0, 2))
 
-        grand_total_label = ctk.CTkLabel(master=grand_total_frame, text="Grand Total:")
-        grand_total_label.pack(side=ctk.LEFT, padx=(0, 2))
+    grand_total_entry = ctk.CTkEntry(master=grand_total_frame, width=100, state='disabled')
+    grand_total_entry.pack(side=ctk.LEFT, padx=5)
+    grand_total_entry.insert(0, f"{grand_total:.2f}")
 
-        grand_total_entry = ctk.CTkEntry(master=grand_total_frame, width=100, state='disabled')
-        grand_total_entry.pack(side=ctk.LEFT, padx=5)
-        grand_total_entry.insert(0, f"{grand_total:.2f}")
+    back_btn = ctk.CTkButton(master=grand_total_frame, text="Back", command=toggle_callback)
+    back_btn.pack(side=ctk.RIGHT, padx=5)
 
-        update_cart_display(cart_items, grand_total)
-    else:
-        cart_window.lift()
+    update_cart_display(cart_frame, cart_items, grand_total)
 
-def update_cart_display(items, total):
-    global cart_window, grand_total
-    if cart_window is None or not cart_window.winfo_exists():
-        return
+def update_cart_display(cart_frame, items, total):
+    global cart_items, grand_total
+    cart_items = items
+    grand_total = total
 
-    cart_frame = cart_window.winfo_children()[0]
-    for widget in cart_frame.winfo_children():
+    cart_content = cart_frame.winfo_children()[0]
+    for widget in cart_content.winfo_children():
         widget.destroy()
 
-    for idx, (product, price, quantity, item_total) in enumerate(items):
-        item_frame = ctk.CTkFrame(master=cart_frame)
+    for idx, (product, price, quantity, item_total) in enumerate(cart_items):
+        item_frame = ctk.CTkFrame(master=cart_content)
         item_frame.pack(fill=ctk.X, pady=5)
 
-        # Left-aligned text: Name, Price, Total
         item_label = ctk.CTkLabel(
             master=item_frame,
             text=f"{product}    ${price:.2f}    ${item_total:.2f}",
@@ -57,7 +47,6 @@ def update_cart_display(items, total):
         )
         item_label.pack(side=ctk.LEFT, padx=5)
 
-        # Quantity controls on the right
         qty_frame = ctk.CTkFrame(master=item_frame)
         qty_frame.pack(side=ctk.RIGHT, padx=5)
 
@@ -65,11 +54,10 @@ def update_cart_display(items, total):
             master=qty_frame,
             text="-",
             width=30,
-            command=lambda i=idx: subtract_quantity(i)
+            command=lambda i=idx: subtract_quantity(i, cart_frame)
         )
         minus_btn.pack(side=ctk.LEFT, padx=2)
 
-        # Changed to CTkLabel for readable, non-editable quantity
         qty_display = ctk.CTkLabel(
             master=qty_frame,
             text=str(quantity),
@@ -83,7 +71,7 @@ def update_cart_display(items, total):
             master=qty_frame,
             text="+",
             width=30,
-            command=lambda i=idx: add_quantity(i)
+            command=lambda i=idx: add_quantity(i, cart_frame)
         )
         plus_btn.pack(side=ctk.LEFT, padx=2)
 
@@ -93,19 +81,18 @@ def update_cart_display(items, total):
             width=60,
             fg_color="red",
             hover_color="darkred",
-            command=lambda i=idx: remove_item(i)
+            command=lambda i=idx: remove_item(i, cart_frame)
         )
         delete_btn.pack(side=ctk.LEFT, padx=5)
 
-    # Update grand total
-    grand_total_frame = cart_window.winfo_children()[1]
+    grand_total_frame = cart_frame.winfo_children()[1]
     grand_total_entry = grand_total_frame.winfo_children()[1]
     grand_total_entry.configure(state='normal')
     grand_total_entry.delete(0, ctk.END)
     grand_total_entry.insert(0, f"{total:.2f}")
     grand_total_entry.configure(state='disabled')
 
-def subtract_quantity(index):
+def subtract_quantity(index, cart_frame):
     global cart_items, grand_total
     product, price, quantity, item_total = cart_items[index]
     if quantity > 1:
@@ -113,22 +100,22 @@ def subtract_quantity(index):
         new_total = price * new_quantity
         grand_total = grand_total - item_total + new_total
         cart_items[index] = (product, price, new_quantity, new_total)
-        update_cart_display(cart_items, grand_total)
+        update_cart_display(cart_frame, cart_items, grand_total)
 
-def add_quantity(index):
+def add_quantity(index, cart_frame):
     global cart_items, grand_total
     product, price, quantity, item_total = cart_items[index]
     new_quantity = quantity + 1
     new_total = price * new_quantity
     grand_total = grand_total - item_total + new_total
     cart_items[index] = (product, price, new_quantity, new_total)
-    update_cart_display(cart_items, grand_total)
+    update_cart_display(cart_frame, cart_items, grand_total)
 
-def remove_item(index):
+def remove_item(index, cart_frame):
     global cart_items, grand_total
     item_total = cart_items[index][3]
     grand_total -= item_total
     cart_items.pop(index)
-    update_cart_display(cart_items, grand_total)
+    update_cart_display(cart_frame, cart_items, grand_total)
     if not cart_items:
-        cart_window.destroy()
+        cart_frame.pack_forget()
