@@ -4,7 +4,7 @@ conn = mysql.connector.connect(
     host='localhost',
     user='root',
     password='',
-    database='smarstock_inventory'
+    database='smartstock_inventory'
 )
 print("Connected!")
 conn.close()

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 06, 2025 at 01:26 PM
+-- Generation Time: Mar 05, 2025 at 04:33 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -72,16 +72,14 @@ CREATE TABLE `categories` (
 -- Dumping data for table `categories`
 --
 
-INSERT INTO `categories` (`CategoryID`, `Name`, `Description`, `Created_At`, `Created_By`, `Updated_At`, `Updated_By`) VALUES
-(1, 'Dairy and Eggs', 'Milk, cheese, eggs, and related products', '2025-03-06 16:35:53', 1, '2025-03-06 16:35:53', 1),
-(2, 'Baking Supplies', 'Flour, sugar, baking powder, and other baking essentials', '2025-03-06 16:35:53', 1, '2025-03-06 16:35:53', 1),
-(3, 'Snacks', 'Chips, cookies, nuts, and other snack items', '2025-03-06 16:35:53', 1, '2025-03-06 16:35:53', 1),
-(4, 'Beverages', 'Water, soda, juice, and other drinks', '2025-03-06 16:35:53', 1, '2025-03-06 16:35:53', 1),
-(5, 'Canned Goods', 'Canned vegetables, fruits, and meats', '2025-03-06 16:35:53', 1, '2025-03-06 16:35:53', 1),
-(6, 'Condiments', 'Ketchup, mustard, sauces, and dressings', '2025-03-06 16:35:53', 1, '2025-03-06 16:35:53', 1),
-(7, 'Household Supplies', 'Cleaning products, paper goods, and household essentials', '2025-03-06 16:35:53', 1, '2025-03-06 16:35:53', 1),
-(8, 'Personal Care', 'Soap, shampoo, toothpaste, and personal hygiene products', '2025-03-06 16:35:53', 1, '2025-03-06 16:35:53', 1),
-(9, 'Pet Foods', 'Food and treats for pets', '2025-03-06 16:35:53', 1, '2025-03-06 16:35:53', 1);
+-- INSERT INTO `categories` (`CategoryID`, `Name`, `Description`, `Created_At`, `Created_By`, `Updated_At`, `Updated_By`) VALUES
+-- (1, 'CPU', 'Central Processing Unit', '2025-03-05 22:09:52', 1, '2025-03-05 22:09:52', 1),
+-- (2, 'Memory', 'RAM and other memory components', '2025-03-05 22:09:52', 1, '2025-03-05 22:09:52', 1),
+-- (3, 'Storage', 'Hard drives, SSDs, and other storage devices', '2025-03-05 22:09:52', 1, '2025-03-05 22:09:52', 1),
+-- (4, 'Motherboard', 'Main circuit board of the computer', '2025-03-05 22:09:52', 1, '2025-03-05 22:09:52', 1),
+-- (5, 'Power Supply', 'Power supply units for computers', '2025-03-05 22:09:52', 1, '2025-03-05 22:09:52', 1),
+-- (6, 'Peripherals', 'Keyboards, mice, monitors, and other peripherals', '2025-03-05 22:09:52', 1, '2025-03-05 22:09:52', 1),
+-- (7, 'Chassis', 'Computer cases and chassis', '2025-03-05 22:09:52', 1, '2025-03-05 22:09:52', 1);
 
 -- --------------------------------------------------------
 
@@ -91,21 +89,14 @@ INSERT INTO `categories` (`CategoryID`, `Name`, `Description`, `Created_At`, `Cr
 
 CREATE TABLE `customers` (
   `CustomerID` int(11) NOT NULL,
-  `Name` varchar(50) DEFAULT NULL,
-  `Address` text DEFAULT NULL,
-  `PhoneNumber` varchar(255) DEFAULT NULL,
+  `Name` varchar(50) NOT NULL,
+  `Address` text NOT NULL,
+  `PhoneNumber` varchar(255) NOT NULL,
   `Created_At` datetime NOT NULL DEFAULT current_timestamp(),
   `Created_By` int(11) NOT NULL,
   `Updated_At` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `Updated_By` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `customers`
---
-
-INSERT INTO `customers` (`CustomerID`, `Name`, `Address`, `PhoneNumber`, `Created_At`, `Created_By`, `Updated_At`, `Updated_By`) VALUES
-(1, 'Russel Labiaga', 'Mintal, Davao City', '09770796010', '2025-03-06 20:21:01', 1, '2025-03-06 20:21:01', 1);
 
 -- --------------------------------------------------------
 
@@ -194,27 +185,23 @@ CREATE TABLE `products` (
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`ProductID`, `Name`, `Description`, `CategoryID`, `Price`, `StockQuantity`, `Status`, `SupplierID`, `Created_At`, `Created_By`, `Updated_At`, `Updated_By`) VALUES
-(1, 'Whole Milk', '1 Gallon of fresh whole milk', 1, 3.99, 50, 'In Stock', 2, '2025-03-06 16:36:48', 1, '2025-03-06 16:36:48', 1),
-(2, 'Large Eggs', 'Dozen large white eggs', 1, 2.49, 100, 'In Stock', 2, '2025-03-06 16:36:48', 1, '2025-03-06 16:36:48', 1),
-(3, 'All-Purpose Flour', '5 lb bag of flour', 2, 2.99, 75, 'In Stock', 2, '2025-03-06 16:36:48', 1, '2025-03-06 16:36:48', 1),
-(4, 'Granulated Sugar', '4 lb bag of sugar', 2, 3.29, 60, 'In Stock', 2, '2025-03-06 16:36:48', 1, '2025-03-06 16:36:48', 1),
-(5, 'Potato Chips', '10 oz bag of salted chips', 3, 2.79, 80, 'In Stock', 2, '2025-03-06 16:36:48', 1, '2025-03-06 16:36:48', 1),
-(6, 'Chocolate Cookies', '12 oz pack of cookies', 3, 3.49, 70, 'In Stock', 2, '2025-03-06 16:36:48', 1, '2025-03-06 16:36:48', 1),
-(7, 'Bottled Water', '24-pack of 16.9 oz bottles', 4, 4.99, 40, 'In Stock', 2, '2025-03-06 16:36:48', 1, '2025-03-06 16:36:48', 1),
-(8, 'Cola Soda', '2-liter bottle of cola', 4, 1.89, 90, 'In Stock', 2, '2025-03-06 16:36:48', 1, '2025-03-06 16:36:48', 1),
-(9, 'Canned Corn', '15 oz can of sweet corn', 5, 1.29, 100, 'In Stock', 2, '2025-03-06 16:36:48', 1, '2025-03-06 16:36:48', 1),
-(10, 'Canned Tuna', '5 oz can of tuna in water', 5, 1.59, 85, 'In Stock', 2, '2025-03-06 16:36:48', 1, '2025-03-06 16:36:48', 1),
-(11, 'Tomato Ketchup', '32 oz bottle of ketchup', 6, 2.99, 60, 'In Stock', 2, '2025-03-06 16:36:48', 1, '2025-03-06 16:36:48', 1),
-(12, 'Yellow Mustard', '20 oz bottle of mustard', 6, 1.99, 70, 'In Stock', 2, '2025-03-06 16:36:48', 1, '2025-03-06 16:36:48', 1),
-(13, 'Paper Towels', '6-roll pack of paper towels', 7, 6.99, 50, 'In Stock', 2, '2025-03-06 16:36:48', 1, '2025-03-06 16:36:48', 1),
-(14, 'Dish Soap', '24 oz bottle of dish soap', 7, 2.49, 65, 'In Stock', 2, '2025-03-06 16:36:48', 1, '2025-03-06 16:36:48', 1),
-(15, 'Bar Soap', '4-pack of unscented soap bars', 8, 3.79, 80, 'In Stock', 2, '2025-03-06 16:36:48', 1, '2025-03-06 16:36:48', 1),
-(16, 'Shampoo', '13.5 oz bottle of shampoo', 8, 4.29, 55, 'In Stock', 2, '2025-03-06 16:36:48', 1, '2025-03-06 16:36:48', 1),
-(17, 'Dry Dog Food', '15 lb bag of dog kibble', 9, 12.99, 30, 'In Stock', 2, '2025-03-06 16:36:48', 1, '2025-03-06 16:36:48', 1),
-(18, 'Cat Treats', '3 oz pack of cat treats', 9, 2.89, 90, 'In Stock', 2, '2025-03-06 16:36:48', 1, '2025-03-06 16:36:48', 1);
+-- INSERT INTO `products` (`ProductID`, `Name`, `Description`, `CategoryID`, `Price`, `StockQuantity`, `Status`, `SupplierID`, `Created_At`, `Created_By`, `Updated_At`, `Updated_By`) VALUES
+-- (12, 'AMD Ryzen 9 5900X', 'AMD Ryzen 9 12-Core Processor', 1, 549.99, 30, 'In Stock', 2, '2025-03-05 22:12:49', 1, '2025-03-05 22:12:49', 1),
+-- (13, 'Corsair Vengeance LPX 16GB', '16GB DDR4 3200MHz Memory Kit', 2, 79.99, 100, 'In Stock', 2, '2025-03-05 22:12:49', 1, '2025-03-05 22:12:49', 1),
+-- (14, 'G.Skill Trident Z RGB 32GB', '32GB DDR4 3600MHz Memory Kit', 2, 159.99, 50, 'In Stock', 2, '2025-03-05 22:12:49', 1, '2025-03-05 22:12:49', 1),
+-- (15, 'Samsung 970 EVO Plus 1TB', '1TB NVMe M.2 SSD', 3, 129.99, 75, 'In Stock', 2, '2025-03-05 22:12:49', 1, '2025-03-05 22:12:49', 1),
+-- (16, 'Western Digital Blue 2TB', '2TB SATA III HDD', 3, 59.99, 120, 'In Stock', 2, '2025-03-05 22:12:49', 1, '2025-03-05 22:12:49', 1),
+-- (17, 'ASUS ROG Strix Z690-E', 'Intel Z690 ATX Motherboard', 4, 399.99, 25, 'In Stock', 2, '2025-03-05 22:12:49', 1, '2025-03-05 22:12:49', 1),
+-- (18, 'MSI MAG B550 Tomahawk', 'AMD B550 ATX Motherboard', 4, 179.99, 40, 'In Stock', 2, '2025-03-05 22:12:49', 1, '2025-03-05 22:12:49', 1),
+-- (19, 'Corsair RM850x', '850W 80+ Gold Fully Modular PSU', 5, 129.99, 60, 'In Stock', 2, '2025-03-05 22:12:49', 1, '2025-03-05 22:12:49', 1),
+-- (20, 'EVGA SuperNOVA 750 G5', '750W 80+ Gold Fully Modular PSU', 5, 109.99, 45, 'In Stock', 2, '2025-03-05 22:12:49', 1, '2025-03-05 22:12:49', 1),
+-- (21, 'Logitech G Pro X Keyboard', 'Mechanical Gaming Keyboard', 6, 149.99, 80, 'In Stock', 2, '2025-03-05 22:12:49', 1, '2025-03-05 22:12:49', 1),
+-- (22, 'Razer DeathAdder V2', 'Gaming Mouse with Optical Sensor', 6, 69.99, 150, 'In Stock', 2, '2025-03-05 22:12:49', 1, '2025-03-05 22:12:49', 1),
+-- (23, 'NZXT H510', 'Compact ATX Mid-Tower Case', 7, 89.99, 90, 'In Stock', 2, '2025-03-05 22:12:49', 1, '2025-03-05 22:12:49', 1),
+-- (24, 'Lian Li PC-O11 Dynamic', 'ATX Mid-Tower Case with Tempered Glass', 7, 149.99, 50, 'In Stock', 2, '2025-03-05 22:12:49', 1, '2025-03-05 22:12:49', 1),
+-- (25, 'Intel Core i7-12700K', '12th Gen Intel Core i7 Processor', 1, 399.99, 50, 'In Stock', 2, '2025-03-05 22:24:42', 1, '2025-03-05 22:24:42', 1);
 
--- --------------------------------------------------------
+-- -- --------------------------------------------------------
 
 --
 -- Table structure for table `receiving`
@@ -492,7 +479,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `CustomerID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `CustomerID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `employees`
@@ -516,7 +503,7 @@ ALTER TABLE `orders`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `ProductID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `ProductID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `receiving`
